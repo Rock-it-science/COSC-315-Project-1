@@ -64,9 +64,22 @@ int main() {
         // to implement the rest of closh                     //
         //                                                    //
         // /////////////////////////////////////////////////////
-        
+        pid_t child_pid;
+		if(parallel){//Run in parallel
+			
+		}
+		else{//Run sequentially
+			//Run program 'count' times, waiting for timeout each time
+			for(int i=0; i<count; i++){
+				printf("i: %d\n", i);
+				child_pid = fork();
+				if(child_pid == 0){
+					execvp(cmdTokens[0], cmdTokens);
+				}
+			}
+		}
         // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
-        execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
+        //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
         // doesn't return unless the calling failed
         printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
         exit(1);        
