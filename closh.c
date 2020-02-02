@@ -1,13 +1,14 @@
 // closh.c - COSC 315, Winter 2020
 // Will McFarland 86184900
-// Alvin ...
-// Winter ...
+// Alvin Krisnanto Putra 54658380
+// Winter Manassawin [stuId]
 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <pthread.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -66,7 +67,13 @@ int main() {
         // /////////////////////////////////////////////////////
         pid_t child_pid;
 		if(parallel){//Run in parallel
-			
+            alarm(timeout);
+            pthread_t threads[count];//Run concurrently using prthreads (resource 1)
+            int thread_args[count]
+            for (int i = 0; i < count; i++) {
+                thread_args[i] = i;
+
+            }
 		}
 		else{//Run sequentially
 			//Run program 'count' times, waiting for timeout each time
