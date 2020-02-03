@@ -10,4 +10,4 @@ Design Choices:
 
 
 Resources used:
-[1] https://gribblelab.org/CBootCamp/A2_Parallel_Programming_in_C.html
+[1] 

@@ -73,10 +73,7 @@ int main() {
 		if(parallel){//Run in parallel
             signal(SIGALRM, kill_process);//wait for SIGALRM from alarm() to kill after timeout
             alarm(timeout);
-            pthread_t threads[count];//Run concurrently using prthreads (resource 1)
-            int thread_args[count]
-            for (int i = 0; i < count; i++) {
-                thread_args[i] = i;
+            
 
             }
 		}
