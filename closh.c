@@ -9,6 +9,8 @@
 #include <string.h>
 #include <signal.h>
 #include <pthread.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -76,14 +78,15 @@ int main() {
             
 
             }
-		}
+		
 		else{//Run sequentially
 			//Run program 'count' times, waiting for timeout each time
-            signal(SIGALRM, kill_process);//wait for SIGALRM from alarm() to kill after timeout
-            alarm(timeout);//Start timer
             for (int i = 0; i < count; i++) {
                 child_pid = fork();
+                pid_t waitpid(-1, *child_pid, WUNTRACED);
                 if (child_pid == 0) {
+                    signal(SIGALRM, kill_process);//wait for SIGALRM from alarm() to kill after timeout
+                    alarm(timeout);//Start 
                     //TODO add waitpid and use timeout
                     execvp(cmdTokens[0], cmdTokens);
                     printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
@@ -91,7 +94,6 @@ int main() {
                     exit(1);
                 }
             }
-            kill(0, alarm());
 		}
         // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
         //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
