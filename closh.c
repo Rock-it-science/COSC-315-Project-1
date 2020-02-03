@@ -13,6 +13,10 @@
 #define TRUE 1
 #define FALSE 0
 
+void kill_process(int sig) {//kill processes and its children
+    kill(0, SIGTERM);
+}
+
 // tokenize the command string into arguments - do not modify
 void readCmdTokens(char* cmd, char** cmdTokens) {
     cmd[strlen(cmd) - 1] = '\0'; // drop trailing newline
@@ -67,6 +71,7 @@ int main() {
         // /////////////////////////////////////////////////////
         pid_t child_pid;
 		if(parallel){//Run in parallel
+            signal(SIGALRM, kill_process);//wait for SIGALRM from alarm() to kill after timeout
             alarm(timeout);
             pthread_t threads[count];//Run concurrently using prthreads (resource 1)
             int thread_args[count]
@@ -77,16 +82,19 @@ int main() {
 		}
 		else{//Run sequentially
 			//Run program 'count' times, waiting for timeout each time
-			for(int i=0; i<count; i++){
-				child_pid = fork();
-				if(child_pid == 0){
-					//TODO add waitpid and use timeout
-					execvp(cmdTokens[0], cmdTokens);
-					printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
-					// doesn't return unless the calling failed
-					exit(1); 
-				}
-			}
+            signal(SIGALRM, kill_process);//wait for SIGALRM from alarm() to kill after timeout
+            alarm(timeout);//Start timer
+            for (int i = 0; i < count; i++) {
+                child_pid = fork();
+                if (child_pid == 0) {
+                    //TODO add waitpid and use timeout
+                    execvp(cmdTokens[0], cmdTokens);
+                    printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
+                    // doesn't return unless the calling failed
+                    exit(1);
+                }
+            }
+            kill(0, alarm());
 		}
         // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
         //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
