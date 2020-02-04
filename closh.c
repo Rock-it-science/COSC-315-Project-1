@@ -38,8 +38,8 @@ char readChar() {
 
 //Function to tell user that command timed out
 void timeout_handler(int signum){
-	printf("Command timed out");
-	return;
+	printf("Command timed out\n");
+	exit(1);
 }
 
 // main method - program entry point
@@ -77,8 +77,7 @@ int main() {
         // to implement the rest of closh                     //
         //                                                    //
         // /////////////////////////////////////////////////////
-        pid_t child_pid;
-		int status;
+		int parent_pid, child_pid, status;
 		
 		if(parallel){//Run in parallel
             
@@ -89,11 +88,13 @@ int main() {
 			//Run program 'count' times, waiting for timeout each time
             for (int i = 0; i < count; i++) {
                 
+				parent_pid = getpid();
+				
 				child_pid = fork(); //Fork process
                 
 				
                 if (child_pid == 0) {//Child process
-					
+					printf("\npid: %d\n", getpid()); //print process id
                     execvp(cmdTokens[0], cmdTokens);
                     printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
                     // doesn't return unless the calling failed
@@ -104,7 +105,10 @@ int main() {
 					//Wait for child process to finish or timeout (whichever is first)
 					signal(SIGALRM, timeout_handler);
 					alarm(timeout);
-					pid_t waitpid(child_pid, status);
+					sleep(0.1);//Give program a change to start
+					waitpid(child_pid, 0, 0);
+					alarm(0);
+					printf("Processs successful\n");
 				}
             }
 		}      
