@@ -36,6 +36,12 @@ char readChar() {
     return c;
 }
 
+//Function to tell user that command timed out
+void timeout_handler(int signum){
+	printf("Command timed out");
+	return;
+}
+
 // main method - program entry point
 int main() {
     char cmd[81]; // array of chars (a string)
@@ -72,32 +78,35 @@ int main() {
         //                                                    //
         // /////////////////////////////////////////////////////
         pid_t child_pid;
+		int status;
+		
 		if(parallel){//Run in parallel
-            signal(SIGALRM, kill_process);//wait for SIGALRM from alarm() to kill after timeout
-            alarm(timeout);
             
 
-            }
+		}
 		
 		else{//Run sequentially
 			//Run program 'count' times, waiting for timeout each time
             for (int i = 0; i < count; i++) {
-                child_pid = fork();
-                pid_t waitpid(-1, *child_pid, WUNTRACED);
-                if (child_pid == 0) {
-                    signal(SIGALRM, kill_process);//wait for SIGALRM from alarm() to kill after timeout
-                    alarm(timeout);//Start 
-                    //TODO add waitpid and use timeout
+                
+				child_pid = fork(); //Fork process
+                
+				
+                if (child_pid == 0) {//Child process
+					
                     execvp(cmdTokens[0], cmdTokens);
                     printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
                     // doesn't return unless the calling failed
                     exit(1);
                 }
+				
+				else{//Parent process
+					//Wait for child process to finish or timeout (whichever is first)
+					signal(SIGALRM, timeout_handler);
+					alarm(timeout);
+					pid_t waitpid(child_pid, status);
+				}
             }
-		}
-        // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
-        //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
-               
+		}      
     }
 }
-
