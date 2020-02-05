@@ -16,6 +16,7 @@
 #define FALSE 0
 
 int child_pids[10];
+int child_pid;
 
 void kill_process(int sig) {//kill processes and its children
     kill(0, SIGTERM);
@@ -43,8 +44,12 @@ void timeout_handler(int signum){
     for (int i =0; i < sizeof(child_pids)/4; i++) {
         if(child_pids[i] != 0 && waitpid(child_pids[i],0,WNOHANG) == 0) {
             kill(child_pids[i],SIGTERM);
-        printf("Killed pid: %d\n",child_pids[i]);
+            printf("Killed pid: %d\n",child_pids[i]);
         }
+    }
+    if(child_pid != 0 && waitpid(child_pid,0,WNOHANG) == 0) {
+        kill(child_pid,SIGTERM);
+        printf("Killed pid: %d\n",child_pid);
     }
 
 	printf("Command timed out\n");
@@ -86,7 +91,7 @@ int main() {
         // to implement the rest of closh                     //
         //                                                    //
         // /////////////////////////////////////////////////////
-		int status, child_pid;
+		int status;
 
 		if(parallel){//Run in parallel
 			//Run program 'count' times, and set a timeout for the duration of the execution as 'timeout' seconds
