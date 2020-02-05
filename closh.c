@@ -89,7 +89,7 @@ int main() {
 				child_pids[i] = fork(); //Fork process
 				
                 if (child_pids[i] == 0) {//Child process
-					printf("pid: %d\n", getpid()); //print process id
+					//printf("pid: %d\n", getpid()); //print process id
                     execvp(cmdTokens[0], cmdTokens);
                     printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
                     // doesn't return unless the calling failed
@@ -102,7 +102,7 @@ int main() {
 				waitpid(child_pids[j], 0, 0);
 			}
 			alarm(0); //Disable timeout alarm
-			printf("All Processses executed successfully\n");
+			//printf("All Processses executed successfully\n");
 		}
 		
 		else{//Run sequentially
@@ -112,7 +112,7 @@ int main() {
 				child_pid = fork(); //Fork process
 				
                 if (child_pids == 0) {//Child process
-					printf("\npid: %d\n", getpid()); //print process id
+					//printf("\npid: %d\n", getpid()); //print process id
                     execvp(cmdTokens[0], cmdTokens);
                     printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
                     // doesn't return unless the calling failed
@@ -126,7 +126,7 @@ int main() {
 					sleep(0.1);//Give program a chance to start
 					waitpid(child_pid, 0, 0);
 					alarm(0);
-					printf("Processs successful\n");
+					//printf("Processs successful\n");
 				}
             }
 		}      
