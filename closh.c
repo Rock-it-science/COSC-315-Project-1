@@ -77,26 +77,35 @@ int main() {
         // to implement the rest of closh                     //
         //                                                    //
         // /////////////////////////////////////////////////////
-		int parent_pid, child_pid, status;
+		int parent_pid, status, child_pid;
+		int child_pids[count];
 		
 		if(parallel){//Run in parallel
+			//Run program 'count' times, and set a timeout for the duration of the execution as 'timeout' seconds
             signal(SIGALRM, timeout_handler);
-            alarm(timeout);
-            int fin_child;
-            for (int i = 0; i < count; i++) {
-                parent_pid = getpid();
-                child_pid = fork();
-                if (child_pid == 0) {
-                    printf("\npid: %d\n", getpid());
+			alarm(timeout); //Set the timeout alarm
+			for (int i = 0; i < count; i++) {
+                
+				parent_pid = getpid();
+				
+				child_pids[i] = fork(); //Fork process
+                
+				
+                if (child_pids[i] == 0) {//Child process
+					printf("pid: %d\n", getpid()); //print process id
                     execvp(cmdTokens[0], cmdTokens);
-                    fin_child = child_pid;
-                    printf("Can't execute %s\n", cmdTokens[0]);
+                    printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
+                    // doesn't return unless the calling failed
                     exit(1);
                 }
             }
-            waitpid(fin_child, 0, 0);
-            alarm(0);
-            printf("Process successful\n");
+			//Wait for all child processes to finish or timeout (whichever is first)
+			sleep(0.1);//Give program a chance to start
+			for(int j=0; j<count; j++){
+				waitpid(child_pids[j], 0, 0);
+			}
+			alarm(0); //Disable timeout alarm
+			printf("All Processses executed successfully\n");
 		}
 		
 		else{//Run sequentially
@@ -108,7 +117,7 @@ int main() {
 				child_pid = fork(); //Fork process
                 
 				
-                if (child_pid == 0) {//Child process
+                if (child_pids == 0) {//Child process
 					printf("\npid: %d\n", getpid()); //print process id
                     execvp(cmdTokens[0], cmdTokens);
                     printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
@@ -120,7 +129,7 @@ int main() {
 					//Wait for child process to finish or timeout (whichever is first)
 					signal(SIGALRM, timeout_handler);
 					alarm(timeout);
-					sleep(0.1);//Give program a change to start
+					sleep(0.1);//Give program a chance to start
 					waitpid(child_pid, 0, 0);
 					alarm(0);
 					printf("Processs successful\n");
