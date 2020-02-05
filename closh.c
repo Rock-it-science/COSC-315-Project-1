@@ -123,7 +123,7 @@ int main() {
 				
 				child_pid = fork(); //Fork process
 				
-                if (child_pids == 0) {//Child process
+                if (child_pid == 0) {//Child process
 					printf("\npid: %d\n", getpid()); //print process id
                     execvp(cmdTokens[0], cmdTokens);
                     printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
