@@ -77,7 +77,7 @@ int main() {
         // to implement the rest of closh                     //
         //                                                    //
         // /////////////////////////////////////////////////////
-		int parent_pid, status, child_pid;
+		int status, child_pid;
 		int child_pids[count];
 		
 		if(parallel){//Run in parallel
@@ -85,11 +85,8 @@ int main() {
             signal(SIGALRM, timeout_handler);
 			alarm(timeout); //Set the timeout alarm
 			for (int i = 0; i < count; i++) {
-                
-				parent_pid = getpid();
 				
 				child_pids[i] = fork(); //Fork process
-                
 				
                 if (child_pids[i] == 0) {//Child process
 					printf("pid: %d\n", getpid()); //print process id
@@ -111,11 +108,8 @@ int main() {
 		else{//Run sequentially
 			//Run program 'count' times, waiting for timeout each time
             for (int i = 0; i < count; i++) {
-                
-				parent_pid = getpid();
 				
 				child_pid = fork(); //Fork process
-                
 				
                 if (child_pids == 0) {//Child process
 					printf("\npid: %d\n", getpid()); //print process id
