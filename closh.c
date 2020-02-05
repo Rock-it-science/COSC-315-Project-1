@@ -15,6 +15,8 @@
 #define TRUE 1
 #define FALSE 0
 
+int child_pids[10];
+
 void kill_process(int sig) {//kill processes and its children
     kill(0, SIGTERM);
 }
@@ -38,6 +40,13 @@ char readChar() {
 
 //Function to tell user that command timed out
 void timeout_handler(int signum){
+    for (int i =0; i < sizeof(child_pids)/4; i++) {
+        if(child_pids[i] != 0 && waitpid(child_pids[i],0,WNOHANG) == 0) {
+            kill(child_pids[i],SIGTERM);
+        printf("Killed pid: %d\n",child_pids[i]);
+        }
+    }
+
 	printf("Command timed out\n");
 	exit(1);
 }
@@ -78,8 +87,7 @@ int main() {
         //                                                    //
         // /////////////////////////////////////////////////////
 		int status, child_pid;
-		int child_pids[count];
-		
+
 		if(parallel){//Run in parallel
 			//Run program 'count' times, and set a timeout for the duration of the execution as 'timeout' seconds
             signal(SIGALRM, timeout_handler);
@@ -104,7 +112,6 @@ int main() {
 			alarm(0); //Disable timeout alarm
 			printf("All Processses executed successfully\n");
 		}
-		
 		else{//Run sequentially
 			//Run program 'count' times, waiting for timeout each time
             for (int i = 0; i < count; i++) {
@@ -129,6 +136,6 @@ int main() {
 					printf("Processs successful\n");
 				}
             }
-		}      
+		}
     }
 }
