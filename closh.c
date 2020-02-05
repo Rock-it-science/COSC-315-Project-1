@@ -89,11 +89,9 @@ int main() {
                 if (child_pid == 0) {
                     printf("\npid: %d\n", getpid());
                     execvp(cmdTokens[0], cmdTokens);
+                    fin_child = child_pid;
                     printf("Can't execute %s\n", cmdTokens[0]);
                     exit(1);
-                }
-                if (i == count-1) {
-                    fin_child = child_pid;
                 }
             }
             waitpid(fin_child, 0, 0);
