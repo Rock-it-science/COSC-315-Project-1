@@ -80,8 +80,20 @@ int main() {
 		int parent_pid, child_pid, status;
 		
 		if(parallel){//Run in parallel
-            
-
+            signal(SIGARLM, timeout_handler);
+            alarm(timeout);
+            for (int i = 0; i < count; i++) {
+                parent_pid = getpid();
+                child_pid = fork();
+                if (child_pid == 0) {
+                    printf("\npid: %d\n", getpid());
+                    execvp(cmdTokens[0], cmdTokens);
+                    printf("Can't execute %s\n", cmdTokens[0]);
+                    exit(1);
+                }
+            }
+            alarm(0);
+            printf("Process successful\n");
 		}
 		
 		else{//Run sequentially
