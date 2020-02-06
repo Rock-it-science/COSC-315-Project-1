@@ -3,17 +3,20 @@
 // Alvin Krisnanto Putra 54658380
 // Winter Manassawin [stuId]
 
-#include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
 #include <signal.h>
-#include <pthread.h>
+#include <string.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #define TRUE 1
 #define FALSE 0
+
+int child_pids[10];
+int child_pid;
 
 void kill_process(int sig) {//kill processes and its children
 	kill(0, SIGTERM);
@@ -38,8 +41,17 @@ char readChar() {
 
 //Function to tell user that command timed out
 void timeout_handler(int signum){
-	printf("Command timed out\n");
-	kill(getpid(), 0);
+    for (int i =0; i < sizeof(child_pids)/4; i++) {
+        if(child_pids[i] != 0 && waitpid(child_pids[i],0,WNOHANG) == 0) {
+            kill(child_pids[i],SIGTERM);
+            printf("pid %d timed out\n",child_pids[i]);
+        }
+    }
+    if(child_pid != 0 && waitpid(child_pid,0,WNOHANG) == 0) {
+        kill(child_pid,SIGTERM);
+        printf("pid %d timed out\n",child_pid);
+    }
+    return;
 }
 
 // main method - program entry point
@@ -77,12 +89,11 @@ int main() {
 		// to implement the rest of closh					 //
 		//													//
 		// /////////////////////////////////////////////////////
-		int status, child_pid;
-		int child_pids[count];
 		
 		if(parallel){//Run in parallel
 			//Run program 'count' times, and set a timeout for the duration of the execution as 'timeout' seconds
 			signal(SIGALRM, timeout_handler);
+			alarm(timeout); //Set the timeout alarm
 			for (int i = 0; i < count; i++) {
 				
 				child_pids[i] = fork(); //Fork process
@@ -96,11 +107,11 @@ int main() {
 				}
 			}
 			//Wait for all child processes to finish or timeout (whichever is first)
+			sleep(0.1);//Give program a chance to start
 			for(int j=0; j<count; j++){
-				alarm(timeout); //Set the timeout alarm for this process
 				waitpid(child_pids[j], 0, 0);
-				alarm(0); //Disable timeout alarm
 			}
+			alarm(0); //Disable timeout alarm
 			//printf("All Processses executed successfully\n");
 		}
 		
