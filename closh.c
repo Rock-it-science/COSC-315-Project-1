@@ -11,15 +11,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <conio.h>
-#include "inc/fmod.h"
 
 #define TRUE 1
 #define FALSE 0
 
-FSOUND_SAMPLE* handle;
 int child_pids[10];
 int child_pid;
+int sound_pid;
 
 void kill_process(int sig) {//kill processes and its children
 	kill(0, SIGTERM);
@@ -54,7 +52,13 @@ void timeout_handler(int signum){
         kill(child_pid,SIGTERM);
         printf("pid %d timed out\n",child_pid);
     }
-	FSOUND_PlaySound(0, handle);//play audio
+	sound_pid = fork();
+	if(sound_pid == 0) {//Child process
+		execlp("mpg123", "mpg123", "-q", "term.mp3", 0);
+		printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
+		// doesn't return unless the calling failed
+		exit(1);
+	}
     return;
 }
 
@@ -65,9 +69,6 @@ int main() {
 	int count; // number of times to execute command
 	int parallel; // whether to run in parallel or sequentially
 	int timeout; // max seconds to run set of commands (parallel) or each command (sequentially)
-	
-	FSOUND_Init(44100, 32, 0);//initializing audio handler
-	audio = FSOUND_Sample_Load(0, "term.mp3", 0, 0, 0);//select sound file
 	
 	while (TRUE) { // main shell input loop
 		
@@ -147,6 +148,4 @@ int main() {
 			}
 		}	  
 	}
-	FSOUND_Sample_Free(audio);
-	FSOUND_Close();
 }
