@@ -54,7 +54,7 @@ void timeout_handler(int signum){
     }
 	sound_pid = fork();
 	if(sound_pid == 0) {//Child process
-		execlp("mpg123", "mpg123", "-q", "term.mp3", 0, NULL);
+		execlp("totem", "--enqueue", "term.mp3", NULL);
 		exit(1);
 	}
     return;
