@@ -1,7 +1,7 @@
 // closh.c - COSC 315, Winter 2020
 // Will McFarland 86184900
 // Alvin Krisnanto Putra 54658380
-// Winter Manassawin [stuId]
+// (Winter) Manassawin Rotsawatsuk 12682936
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,10 +11,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <conio.h>
+#include "inc/fmod.h"
 
 #define TRUE 1
 #define FALSE 0
 
+FSOUND_SAMPLE* handle;
 int child_pids[10];
 int child_pid;
 
@@ -51,6 +54,7 @@ void timeout_handler(int signum){
         kill(child_pid,SIGTERM);
         printf("pid %d timed out\n",child_pid);
     }
+	FSOUND_PlaySound(0, handle);//play audio
     return;
 }
 
@@ -61,6 +65,9 @@ int main() {
 	int count; // number of times to execute command
 	int parallel; // whether to run in parallel or sequentially
 	int timeout; // max seconds to run set of commands (parallel) or each command (sequentially)
+	
+	FSOUND_Init(44100, 32, 0);//initializing audio handler
+	audio = FSOUND_Sample_Load(0, "term.mp3", 0, 0, 0);//select sound file
 	
 	while (TRUE) { // main shell input loop
 		
@@ -140,4 +147,6 @@ int main() {
 			}
 		}	  
 	}
+	FSOUND_Sample_Free(audio);
+	FSOUND_Close();
 }
