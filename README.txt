@@ -1,8 +1,8 @@
 ==========================================================
-|| Members			Student ID		||
-|| Will McFarland		86184900		||
-|| Alvin Krisnanto Putra	54658380		||
-|| (Winter) Manassawin Rotsawatsuk	12682936				||
+|| Members				Student ID	||
+|| Will McFarland			86184900	||
+|| Alvin Krisnanto Putra		54658380	||
+|| (Winter) Manassawin Rotsawatsuk	12682936	||
 || 							||
 || Group 14						||
 ==========================================================

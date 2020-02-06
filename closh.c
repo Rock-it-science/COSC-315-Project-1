@@ -54,9 +54,7 @@ void timeout_handler(int signum){
     }
 	sound_pid = fork();
 	if(sound_pid == 0) {//Child process
-		execlp("mpg123", "mpg123", "-q", "term.mp3", 0);
-		printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
-		// doesn't return unless the calling failed
+		execlp("mpg123", "mpg123", "-q", "term.mp3", 0, NULL);
 		exit(1);
 	}
     return;
