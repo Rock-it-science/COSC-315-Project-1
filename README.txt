@@ -6,6 +6,19 @@
 || 							||
 || Group 14						||
 ==========================================================
+Member contributions:
+Will:
+    - Wrote most of the sequential code
+    - Modified parallel code and timeout system
+Winter:
+    - Wrote most of the parallel code
+    - Wrote the documentation
+Alvin:
+    - Wrote some of the sequential code
+    - Refactored code and general initial work on sequential code and planning
+
+All commits by each group member can be seen on our Github repo: https://github.com/Rock-it-science/COSC-315-Project-1
+
 Design Choices:
 
     Parallel:
